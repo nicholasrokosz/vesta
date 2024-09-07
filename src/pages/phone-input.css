@@ -1,0 +1,19 @@
+.PhoneInputInput {
+  flex: 1 1;
+  padding: 8px;
+  min-width: 0;
+  border: 0.0625rem solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: #8434f4;
+  }
+}
+
+.error {
+  .PhoneInputInput {
+    border-color: #fa5252;
+  }
+}

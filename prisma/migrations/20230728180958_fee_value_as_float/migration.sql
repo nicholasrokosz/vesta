@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "RevenueFee" ALTER COLUMN "value" SET DATA TYPE DOUBLE PRECISION;

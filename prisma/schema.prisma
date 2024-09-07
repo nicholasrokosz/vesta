@@ -1,0 +1,748 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider               = "zod-prisma-types"
+  createInputTypes       = true
+  createModelTypes       = true
+  addInputTypeValidation = false
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+// Necessary for Next auth
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String     @unique
+  emailVerified DateTime?
+  image         String?
+  phone         String?
+  accounts      Account[]
+  sessions      Session[]
+  globalRole    GlobalRole @default(CUSTOMER)
+
+  organization         Organization?         @relation(fields: [organizationId], references: [id])
+  organizationId       String?
+  organizationRole     OrganizationRole?
+  managedListings      Listing[]             @relation("ManagedListings")
+  ownedListings        Listing[]             @relation("OwnedListings")
+  expenses             Expense[]
+  bookingPalConnection BookingPalConnection?
+  plaidItems           PlaidItem[]
+  ownerEntity          String?
+  revenuePayouts       RevenuePayout[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// The owners of the SaaS (you) can have a SUPERADMIN role to access all data
+enum GlobalRole {
+  SUPERADMIN
+  CUSTOMER
+}
+
+model Organization {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  name          String
+  language      String   @default("en")
+  adminName     String
+  line1         String
+  line2         String?
+  city          String
+  state         String
+  zip           String
+  country       String   @default("US")
+  website       String
+  phone         String
+  currency      String   @default("USD")
+  startDate     DateTime @default(now())
+  directBooking Boolean  @default(false)
+  logoUrl       String?
+
+  users                User[]
+  listings             Listing[]
+  bookingPalConnection BookingPalConnection?
+  messageTemplates     MessageTemplate[]
+  guests               Guest[]
+  plaidItems           PlaidItem[]
+  priceLabsConnection  PriceLabsConnection?
+  stripeConnection     StripeConnection?
+}
+
+enum OrganizationRole {
+  ADMIN
+  PROPERTY_MANAGER
+  PROPERTY_OWNER
+}
+
+model BookingPalConnection {
+  id             String        @id @default(cuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @unique
+  companyId      Int           @unique
+  email          String        @unique
+  password       String
+  ownerId        String?       @unique
+  owner          User?         @relation(fields: [ownerId], references: [id])
+}
+
+model PriceLabsConnection {
+  id             String        @id @default(cuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  accountEmail   String
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @unique
+}
+
+model StripeConnection {
+  id               String       @id @default(cuid())
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  organizationId   String       @unique
+  organization     Organization @relation(fields: [organizationId], references: [id])
+  accountId        String       @unique
+  detailsSubmitted Boolean      @default(false)
+}
+
+model Listing {
+  id                String            @id @default(cuid())
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  name              String
+  unitType          UnitType
+  beds              Int
+  baths             Float
+  guests            Int
+  line1             String
+  line2             String?
+  city              String
+  state             String
+  zip               String
+  country           String            @default("US")
+  latitude          Float?
+  longitude         Float?
+  timeZone          String
+  content           Content?
+  rules             Rules?
+  pricing           Pricing?
+  availability      Availability?
+  amenities         Amenity[]
+  fees              Fee[]
+  taxRates          TaxRates?
+  airbnbRemitsTaxes Boolean           @default(false)
+  events            CalendarEvent[]
+  messageTemplates  MessageTemplate[]
+  organizationId    String
+  organization      Organization      @relation(fields: [organizationId], references: [id])
+  deductions        Deductions?
+  propertyManagerId String
+  propertyManager   User              @relation("ManagedListings", fields: [propertyManagerId], references: [id])
+  propertyOwnerId   String?
+  propertyOwner     User?             @relation("OwnedListings", fields: [propertyOwnerId], references: [id])
+  wifiName          String?
+  wifiPassword      String?
+  notes             String?
+  bpProductId       String?           @unique
+  messageThreads    MessageThread[]
+  listingExpenses   ListingExpense[]
+  ownerStatements   OwnerStatement[]
+  doorCode          String?
+  url               String?
+  basePrice         Float             @default(0.00)
+  dailyRates        DailyRate[]
+  iCalKey           String?           @unique
+  keys              ListingKey[]
+}
+
+model ListingKey {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  listingId String
+  keyType   KeyType
+
+  @@unique([listingId, keyType])
+}
+
+enum KeyType {
+  iCal
+  Direct
+}
+
+enum UnitType {
+  House
+  Apartment
+  Condo
+  SecondaryUnit
+  BedAndBreakfast
+  BoutiqueHotel
+}
+
+model Content {
+  id          String    @id @default(cuid())
+  listing     Listing   @relation(fields: [listingId], references: [id])
+  listingId   String    @unique
+  photos      String[]
+  title       String
+  description String
+  aiInfo      String?
+  bedrooms    Bedroom[]
+}
+
+model Rules {
+  id        String  @id @default(cuid())
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId String  @unique
+  pets      Boolean @default(false)
+  children  Boolean @default(false)
+  smoking   Boolean @default(false)
+  deposit   Boolean @default(false)
+  house     String?
+}
+
+model Pricing {
+  id             String         @id @default(cuid())
+  listing        Listing        @relation(fields: [listingId], references: [id])
+  listingId      String         @unique
+  minimum        Int
+  weekday        Int
+  weekend        Int
+  minStay        Int
+  maxStay        Int
+  dates          PricingDate[]
+  discounts      Discount[]
+  dynamicPricing DynamicPricing @default(None)
+}
+
+enum DynamicPricing {
+  None
+  PriceLabs
+}
+
+model PricingDate {
+  id        String   @id @default(cuid())
+  pricing   Pricing  @relation(fields: [pricingId], references: [id])
+  pricingId String
+  startDate DateTime
+  endDate   DateTime
+  percent   Float
+}
+
+model Discount {
+  id        String  @id @default(cuid())
+  pricing   Pricing @relation(fields: [pricingId], references: [id])
+  pricingId String
+  days      Int
+  percent   Int     @default(0)
+}
+
+model Availability {
+  id        String  @id @default(cuid())
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId String  @unique
+  checkIn   String
+  checkOut  String
+  leadTime  Int     @default(1)
+}
+
+model Amenity {
+  id        String  @id @default(cuid())
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId String
+  typeId    String
+  note      String?
+}
+
+model Fee {
+  id        String  @id @default(cuid())
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId String
+  name      String
+  value     Int
+  unit      String
+  taxable   Boolean
+  type      String
+  share     Float
+}
+
+model TaxRates {
+  id        String  @id @default(cuid())
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId String  @unique
+  municipal Float   @default(0)
+  county    Float   @default(0)
+  state     Float   @default(0)
+}
+
+model Deductions {
+  id             String  @id @default(cuid())
+  listing        Listing @relation(fields: [listingId], references: [id])
+  listingId      String  @unique
+  channelFees    Boolean
+  creditCardFees Boolean
+  discounts      Boolean
+  municipalTaxes Boolean
+  countyTaxes    Boolean
+  stateTaxes     Boolean
+  otherGuestFees Boolean
+  pmcShare       Float
+}
+
+model Bedroom {
+  id        String   @id @default(cuid())
+  content   Content  @relation(fields: [contentId], references: [id])
+  contentId String
+  type      String
+  bathroom  Boolean  @default(false)
+  beds      String[]
+}
+
+enum CalendarEventType {
+  Reservation
+  Blocked
+  Maintenance
+}
+
+model CalendarEvent {
+  id          String            @id @default(cuid())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  listing     Listing           @relation(fields: [listingId], references: [id])
+  listingId   String
+  fromDate    DateTime
+  toDate      DateTime
+  type        CalendarEventType
+  reservation Reservation?
+  notes       String?
+  bookedOn    DateTime?         @db.Date
+}
+
+model Reservation {
+  id                String             @id @default(cuid())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  calendarEvent     CalendarEvent      @relation(fields: [calendarEventId], references: [id])
+  calendarEventId   String             @unique
+  channel           Channel            @default(Direct)
+  bpReservationId   String?            @unique
+  confirmationCode  String?            @unique
+  adults            Int
+  children          Int
+  pets              Int                @default(0)
+  status            ReservationStatus  @default(CONFIRMED)
+  scheduledMessages ScheduledMessage[]
+  revenue           Revenue?
+  guest             Guest              @relation(fields: [guestId], references: [id])
+  guestId           String
+}
+
+// Queue for sending availabilty to BP
+model ReservationBpRequest {
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  organizationId String
+  listingId      String
+  reservationId  String
+  fromDate       DateTime
+  toDate         DateTime
+  available      Boolean
+  status         QueueStatus @default(PENDING)
+}
+
+enum QueueStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Guest {
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  name           String
+  email          String?
+  phone          String?
+  reservations   Reservation[]
+  messageThreads MessageThread[]
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+}
+
+model MessageThread {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  listing           Listing   @relation(fields: [listingId], references: [id])
+  listingId         String
+  guest             Guest     @relation(fields: [guestId], references: [id])
+  guestId           String
+  bpThreadId        String?   @unique
+  channelThreadId   String?   @unique
+  lastMessageSentAt String?
+  dateFrom          String
+  dateTo            String
+  replyTo           String?   @unique
+  archived          Boolean   @default(false)
+  enableReminder    Boolean   @default(true)
+  channel           Channel
+  messages          Message[]
+
+  @@unique([guestId, listingId, channel])
+}
+
+enum MessageUser {
+  GUEST
+  PROPERTY_MANAGER
+}
+
+model Message {
+  id               String        @id @default(cuid())
+  createdAt        DateTime      @default(now())
+  messageThread    MessageThread @relation(fields: [messageThreadId], references: [id])
+  messageThreadId  String
+  message          String
+  user             MessageUser
+  timestamp        DateTime
+  bpMessageId      String?       @unique
+  channelMessageId String?       @unique
+  read             Boolean       @default(false)
+}
+
+enum ReservationStatus {
+  CANCELLED
+  CONFIRMED
+  FULLY_PAID
+  PROVISIONAL
+  RESERVED
+  EXCEPTION
+  FAILED
+}
+
+model MessageTemplate {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  title        String
+  body         String
+  bodyHtml     String
+  enabled      Boolean       @default(true)
+  trigger      Trigger?
+  triggerRange TriggerRange?
+  triggerUnit  TriggerUnit?
+  triggerValue Int?
+  allListings  Boolean       @default(true)
+
+  organizationId    String
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  scheduledMessages ScheduledMessage[]
+  listings          Listing[]
+}
+
+enum Trigger {
+  CheckIn
+  CheckOut
+  ReservationConfirmed
+}
+
+enum TriggerRange {
+  Immediately
+  After
+  Before
+}
+
+enum TriggerUnit {
+  Minutes
+  Hours
+  Days
+}
+
+model ScheduledMessage {
+  id                String                 @id @default(cuid())
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  scheduledAt       DateTime
+  reservation       Reservation            @relation(fields: [reservationId], references: [id])
+  reservationId     String
+  messageTemplate   MessageTemplate        @relation(fields: [messageTemplateId], references: [id])
+  messageTemplateId String
+  status            ScheduledMessageStatus @default(PENDING)
+  completedAt       DateTime?
+  failureMessage    String?
+
+  @@unique([reservationId, messageTemplateId])
+  @@index(scheduledAt(sort: Desc))
+}
+
+enum ScheduledMessageStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+enum Channel {
+  Airbnb
+  Booking
+  VRBO
+  Direct
+}
+
+model Revenue {
+  id                String          @id @default(cuid())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  reservationId     String          @unique
+  reservation       Reservation     @relation(fields: [reservationId], references: [id])
+  accommodation     Float?
+  pmcShare          Float
+  fees              RevenueFee[]
+  discount          Float?
+  channelCommission Float?
+  ownerStatementId  String?
+  ownerStatement    OwnerStatement? @relation(fields: [ownerStatementId], references: [id])
+
+  payout       RevenuePayout[]
+  payoutStatus RevenuePayoutStatus @default(UNPAID)
+}
+
+enum RevenuePayoutStatus {
+  FULL
+  PARTIAL
+  UNPAID
+}
+
+model RevenueTax {
+  id           String               @id @default(cuid())
+  revenueId    String?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  description  String
+  value        Float
+  revenueFeeId String
+  revenueFee   RevenueFee           @relation(fields: [revenueFeeId], references: [id])
+  type         RevenueDeductionType
+}
+
+model RevenueFee {
+  id         String           @id @default(cuid())
+  revenue    Revenue          @relation(fields: [revenueId], references: [id])
+  revenueId  String
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  name       String
+  value      Float
+  unit       String
+  pmcShare   Float
+  taxable    Boolean          @default(true)
+  deductions RevenueTax[] // when taxable
+  type       RevenueEntryType
+}
+
+enum RevenueEntryType {
+  ACCOMMODATION
+  GUEST_FEE
+  CANCELLATION_FEE
+  SECURITY_DEPOSIT
+}
+
+enum RevenueDeductionType {
+  TAX
+  DISCOUNT
+  CHANNEL_COMMISSION
+  CREDIT_CARD
+}
+
+model Expense {
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  date            DateTime
+  amount          Float
+  vendor          String
+  description     String?
+  workOrder       String?
+  receiptUrl      String?
+  invoiceUrl      String?
+  userId          String?
+  user            User?            @relation(fields: [userId], references: [id])
+  listingExpenses ListingExpense[]
+
+  plaidTransactionId String?           @unique
+  plaidTransaction   PlaidTransaction? @relation(fields: [plaidTransactionId], references: [id])
+}
+
+model ListingExpense {
+  id               String          @id @default(cuid())
+  confirmationCode String?
+  expenseId        String
+  expense          Expense         @relation(fields: [expenseId], references: [id])
+  listingId        String
+  listing          Listing         @relation(fields: [listingId], references: [id])
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  amount           Float
+  amountPaid       Float
+  ownerStatement   OwnerStatement? @relation(fields: [ownerStatementId], references: [id])
+  ownerStatementId String?
+}
+
+model OwnerStatement {
+  id              String           @id @default(cuid())
+  listingId       String
+  listing         Listing          @relation(fields: [listingId], references: [id])
+  month           Int
+  year            Int
+  locked          Boolean          @default(true)
+  isCoHost        Boolean          @default(false)
+  listingExpenses ListingExpense[]
+  revenue         Revenue[]
+
+  @@unique([listingId, month, year])
+}
+
+model PlaidItem {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accessToken String  @unique
+  cursor      String?
+
+  institution   String
+  institutionId String
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id])
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  accounts PlaidAccount[]
+}
+
+model PlaidAccount {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  itemId String
+  item   PlaidItem @relation(fields: [itemId], references: [id])
+
+  plaidId            String             @unique
+  name               String
+  mask               String
+  type               String
+  subtype            String
+  verificationStatus String?
+  transactions       PlaidTransaction[]
+}
+
+model PlaidTransaction {
+  id String @id @default(cuid())
+
+  accountId String
+  account   PlaidAccount @relation(fields: [accountId], references: [id])
+
+  plaidId String
+  status  PlaidImportStatus @default(PENDING)
+  date    DateTime
+  amount  Float
+  vendor  String
+  name    String
+  expense Expense?
+  payout  Payout?
+}
+
+enum PlaidImportStatus {
+  PENDING
+  ACCEPTED
+  DISMISSED
+}
+
+model DailyRate {
+  id String @id @default(cuid())
+
+  listingId String
+  listing   Listing @relation(fields: [listingId], references: [id])
+
+  date    DateTime @db.Date
+  rate    Int
+  minStay Int      @default(1)
+}
+
+model Payout {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  date      DateTime @db.Date
+  amount    Decimal  @db.Decimal(12, 2)
+  allocated Boolean  @default(false)
+
+  plaidTransactionId String?           @unique
+  plaidTransaction   PlaidTransaction? @relation(fields: [plaidTransactionId], references: [id])
+  revenuePayout      RevenuePayout[]
+}
+
+model RevenuePayout {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+  createdById String?
+
+  payout    Payout  @relation(fields: [payoutId], references: [id])
+  payoutId  String
+  revenue   Revenue @relation(fields: [revenueId], references: [id])
+  revenueId String
+
+  amount Decimal @db.Decimal(12, 2)
+}

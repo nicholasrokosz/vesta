@@ -1,0 +1,50 @@
+.vestaEvent {
+  font-size: 12px;
+  font-weight: 700;
+  color: #000000;
+
+  padding: 7px 8px;
+  border-radius: 4px;
+
+  min-width: 102px;
+  height: 48px;
+  overflow: hidden;
+}
+
+.small {
+  height: 24px;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.blocked {
+  border: 1px solid #e6e7ea;
+  background: #ffffff;
+}
+
+.confirmed {
+  background: #f5f0fb;
+  color: #492f6f;
+  border: 1px solid #00000014;
+}
+
+.pending {
+  background: #f9fafa;
+  border: 1px dashed #9da3af;
+  color: #191b1f;
+}
+
+.cancelled {
+  background: #fdecec;
+  border: 1px solid #f2a6a6;
+  color: #b91c1c;
+}
+
+.vestaEventGuest {
+  text-align: left;
+}
+
+.vestaEventDetails {
+  font-weight: normal;
+  font-size: 10px;
+}

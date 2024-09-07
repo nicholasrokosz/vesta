@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "checkJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": false,
+    "baseUrl": "src",
+    "noUncheckedIndexedAccess": false
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs"],
+  "exclude": [
+    "node_modules",
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "lambda",
+    "scratch"
+  ]
+}
+
+// {
+//   "compilerOptions": {
+//     "incremental": false,
+//     "noErrorTruncation": true,
+//     "target": "ES2018"
+//   },
+//   "exclude": [
+//     ".next",
+//     "coverage",
+//     "flatfile/node_modules",
+//     "node_modules",
+//     "playwright-report",
+//     "snaplet.config.ts",
+//     "storybook-static",
+//     "tsc-trace"
+//   ],
+// }

@@ -1,0 +1,134 @@
+.mbsc-calendar,
+.mbsc-calendar-controls,
+.mbsc-calendar-title-wrapper {
+  display: block;
+}
+
+.mbsc-calendar-controls {
+  padding-top: 5px;
+  background-color: #fff;
+}
+
+.mbsc-timeline-header-date {
+  border-top: 0;
+}
+
+.mbsc-timeline-header-month {
+  border: 0;
+}
+
+.mbsc-windows.mbsc-calendar-wrapper-fixed {
+  border-bottom: 0;
+}
+
+.vesta-price {
+  font-size: 16px;
+  text-align: center;
+  color: #6a7181;
+}
+
+.vesta-day {
+  font-weight: 600;
+  color: #191b1f;
+  font-size: 14px;
+  padding: 8px;
+}
+.vesta-day.today {
+  color: #a877f2;
+}
+
+.vesta-number {
+  margin-left: 4px;
+  color: #191b1f;
+}
+.vesta-number.today {
+  color: #8434f4;
+}
+
+.mbsc-calendar-cell {
+  height: 100px;
+}
+
+.mbsc-calendar-labels {
+  height: 25%;
+}
+
+.mbsc-calendar-label-wrapper {
+  height: 100%;
+}
+.mbsc-ios.mbsc-calendar-width-md .mbsc-calendar-text {
+  height: 100%;
+}
+
+.mbsc-calendar-day-labels.mbsc-selected {
+  background-color: #ebe3f7;
+}
+
+.mbsc-ios.mbsc-timeline-header-active:after {
+  background-color: #fff;
+}
+
+.mbsc-timeline-column,
+.mbsc-timeline-header-column,
+.mbsc-timeline-day-month {
+  width: 110px;
+}
+
+.mbsc-timeline-resource-col {
+  width: 110px;
+}
+
+.mbsc-timeline-row {
+  border: 0;
+  min-height: 80px;
+}
+
+.mbsc-timeline-resource.mbsc-ltr {
+  border-bottom: 0;
+}
+
+.mbsc-timeline-resource-title {
+  padding-top: 15px;
+}
+
+.mbsc-timeline-header-date-text {
+  color: black;
+}
+
+.mbsc-schedule-time-indicator {
+  display: none;
+}
+
+.mbsc-timeline-grid-scroll::-webkit-scrollbar {
+  -webkit-appearance: none;
+  height: 7px;
+}
+
+.mbsc-timeline-grid-scroll::-webkit-scrollbar-track {
+  background-color: #d9d9d9;
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+.mbsc-timeline-grid-scroll::-webkit-scrollbar-thumb {
+  border-radius: 7px;
+  background-color: #8434f4;
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.mbsc-ios.mbsc-timeline-header-active {
+  color: #8434f4;
+  background-color: #fff;
+}
+
+.mbsc-schedule-color {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 16px;
+}
+.mbsc-schedule-color-text {
+  color: #6a7181;
+  font-size: 14px;
+  opacity: 1;
+}

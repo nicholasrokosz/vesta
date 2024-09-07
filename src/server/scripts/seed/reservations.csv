@@ -1,0 +1,19 @@
+channel,listingId,guestName,bookedOn,dateFrom,dateTo,accommodation,fees,commission,taxes
+Airbnb,cllnzonl2002vrx2qdcod0636,Olga Jones,2023-01-06,2023-01-13,2023-01-16,1941,100,306.15,0
+Airbnb,cllxs256j005kupo3m8043uvt,Robin Smith,2023-01-13,2023-01-15,2023-01-16,622,230,127.8,0
+Airbnb,clmp78rnx000puwss1g1osn6y,Zachary Jackson,2023-01-12,2023-01-20,2023-01-22,1823,300,318.45,0
+Airbnb,cllnzonl2002vrx2qdcod0636,Siim Janas,2023-01-17,2023-01-22,2023-01-23,371.25,120,73.69,0
+Airbnb,clmp78rnx000puwss1g1osn6y,Adam Doe,2022-12-28,2023-01-26,2023-01-29,3045,270,497.25,0
+Airbnb,cllxs256j005kupo3m8043uvt,Elizabeth Henderson,2023-01-20,2023-01-27,2023-01-29,1926.32,195,318.2,0
+Airbnb,cllnzonl2002vrx2qdcod0636,Joanne Slavy,2023-01-26,2023-02-06,2023-02-08,711,120,124.65,0
+Airbnb,clmp78rnx000puwss1g1osn6y,Sunny Chao,2023-01-31,2023-02-10,2023-02-12,1854,300,323.1,0
+Airbnb,cllxs256j005kupo3m8043uvt,Joselle Perez,2022-10-11,2023-02-14,2023-02-17,3642,230,579.3,0
+Airbnb,cllxs256j005kupo3m8043uvt,Alexis Sala,2023-01-17,2023-02-17,2023-02-19,1703,230,289.95,0
+Airbnb,clmp78rnx000puwss1g1osn6y,Marisa Berman,2022-12-30,2023-02-17,2023-02-21,4972,270,786.3,0
+Airbnb,cllxs256j005kupo3m8043uvt,Lisa Sullivan,2023-01-12,2023-02-19,2023-02-22,2434,230,399.6,0
+Airbnb,clmp78rnx000puwss1g1osn6y,Craig Smith,2023-02-10,2023-02-21,2023-02-24,2702,270,442.8,0
+Airbnb,cllnzonl2002vrx2qdcod0636,Ilene Price,2023-01-02,2023-02-23,2023-02-26,4431,120,690.15,0
+Airbnb,cllxs256j005kupo3m8043uvt,Andrew Otero,2023-02-14,2023-02-24,2023-02-26,2200,195,359.25,0
+Airbnb,cllxs256j005kupo3m8043uvt,Michaela Smith,2023-02-10,2023-03-02,2023-03-05,3300,295,539.25,0
+VRBO,cllxs256j005kupo3m8043uvt,Jason White,2023-03-02,2023-03-08,2023-03-09,1100,195,64.75,50
+Direct,cllxs256j005kupo3m8043uvt,Joe Chase,2023-03-06,2023-03-10,2023-03-11,900,195,0,50

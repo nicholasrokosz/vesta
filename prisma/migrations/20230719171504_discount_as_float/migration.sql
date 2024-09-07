@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Revenue" ALTER COLUMN "discount" SET DATA TYPE DOUBLE PRECISION;

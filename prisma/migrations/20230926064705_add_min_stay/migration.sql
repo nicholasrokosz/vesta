@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "DailyRate" ADD COLUMN     "minStay" INTEGER NOT NULL DEFAULT 1;
+
+-- AlterTable
+ALTER TABLE "Pricing" ADD COLUMN     "maxStay" INTEGER NOT NULL DEFAULT 7,
+ADD COLUMN     "minStay" INTEGER NOT NULL DEFAULT 1;

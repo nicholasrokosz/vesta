@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=vesta
+      - POSTGRES_PASSWORD=vesta
+    ports:
+      - "5432:5432"
+    restart: always

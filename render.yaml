@@ -1,0 +1,137 @@
+previewsEnabled: true
+previewsExpireAfterDays: 7
+
+services:
+  - type: web
+    name: vesta
+    env: node
+    region: ohio
+    plan: pro
+    previewPlan: standard
+    buildCommand: ./scripts/production-build.sh
+    startCommand: ./scripts/production-run.sh
+    initialDeployHook: ./scripts/preview-env-seed-database.sh # Only runs on PR environments
+    healthCheckPath: /api/trpc/health
+    domains:
+      - app.getvesta.io
+    envVars:
+      - fromGroup: env-api-secrets
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vesta-db
+          property: connectionString
+      - key: NEXT_PUBLIC_SENTRY_ENV
+        value: 'production'
+        previewValue: 'preview'
+      - key: NODE_OPTIONS
+        value: '--max-old-space-size=4096'
+      - key: NEXTAUTH_URL
+        sync: false
+      - key: AUTH0_ID
+        value: 'CotyoHbBs4lRkVH0z5uWLsVERqoNKYiR'
+        previewValue: '9orNVvnZleAs2rOAuCKO6ZphuTM1t2q2'
+      - key: AUTH0_ISSUER
+        value: 'https://auth.getvesta.io'
+        previewValue: 'https://dev-yjh615ihwfod8ipb.us.auth0.com'
+      - key: APP_DOMAIN
+        value: getvesta.io
+        previewValue: onrender.com
+      - key: APP_URL
+        sync: false
+      - key: APP_HOST
+        fromService:
+          name: vesta
+          type: web
+          property: host
+  - type: worker
+    name: vesta-worker
+    env: node
+    region: ohio
+    plan: pro
+    previewPlan: standard
+    buildCommand: ./scripts/production-build.sh
+    startCommand: ./scripts/production-worker.sh
+    envVars:
+      - fromGroup: env-api-secrets
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vesta-db
+          property: connectionString
+      - key: NEXT_PUBLIC_SENTRY_ENV
+        value: 'production'
+        previewValue: 'preview'
+      - key: NODE_OPTIONS
+        value: '--max-old-space-size=4096'
+      - key: NEXTAUTH_URL
+        sync: false
+      - key: AUTH0_ID
+        value: 'CotyoHbBs4lRkVH0z5uWLsVERqoNKYiR'
+        previewValue: '9orNVvnZleAs2rOAuCKO6ZphuTM1t2q2'
+      - key: AUTH0_ISSUER
+        value: 'https://auth.getvesta.io'
+        previewValue: 'https://dev-yjh615ihwfod8ipb.us.auth0.com'
+      - key: APP_DOMAIN
+        value: getvesta.io
+        previewValue: onrender.com
+      - key: APP_URL
+        sync: false
+      - key: APP_HOST
+        fromService:
+          name: vesta
+          type: web
+          property: host
+  - type: cron
+    name: scheduled-messages-processor
+    env: node
+    region: ohio
+    plan: pro
+    previewPlan: standard
+    schedule: '* * * * *'
+    buildCommand: ./scripts/production-build.sh
+    startCommand: ./scripts/production-process-scheduled-messages.sh
+    envVars:
+      - fromGroup: env-api-secrets
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vesta-db
+          property: connectionString
+      - key: NEXT_PUBLIC_SENTRY_ENV
+        value: 'production'
+        previewValue: 'preview'
+      - key: NODE_OPTIONS
+        value: '--max-old-space-size=4096'
+      - key: NEXTAUTH_URL
+        sync: false
+      - key: AUTH0_ID
+        value: 'CotyoHbBs4lRkVH0z5uWLsVERqoNKYiR'
+        previewValue: '9orNVvnZleAs2rOAuCKO6ZphuTM1t2q2'
+      - key: AUTH0_ISSUER
+        value: 'https://auth.getvesta.io'
+        previewValue: 'https://dev-yjh615ihwfod8ipb.us.auth0.com'
+      - key: APP_DOMAIN
+        value: getvesta.io
+        previewValue: onrender.com
+      - key: APP_URL
+        sync: false
+      - key: APP_HOST
+        fromService:
+          name: vesta
+          type: web
+          property: host
+
+databases:
+  - name: vesta-db
+    region: ohio
+    plan: standard
+    previewPlan: starter
+    databaseName: vestadb
+    user: vesta
+    ipAllowList:
+      - source: 54.204.197.119/32
+        description: Prisma Studio Cloud
+      - source: 3.222.148.224/32
+        description: Prisma Studio Cloud
+      - source: 54.204.47.202/32
+        description: Prisma Studio Cloud
+      - source: 3.227.136.248/32
+        description: Prisma Studio Cloud

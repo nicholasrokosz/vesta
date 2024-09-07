@@ -1,0 +1,10 @@
+.loading-spinner-container {
+  position: relative;
+}
+
+.vesta-message-tag {
+  color: #47099d !important;
+  background-color: #ede2fd !important;
+  border-radius: 4;
+  padding: 2;
+}

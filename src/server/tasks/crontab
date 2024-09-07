@@ -1,0 +1,10 @@
+# See https://crontab.guru/ for cron support
+
+# On 17th minute of every hour
+17 * * * * pricelabs-sync-all-listing-reservations
+
+# On 40th minute of every hour
+40 * * * * bookingpal-sync-all-reservations
+
+# At 1:01 a.m. every day.
+# 1 1 * * * bookingpal-sync-all-availabilities
